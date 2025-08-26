@@ -1,0 +1,23 @@
+title = "Blog do Vibewill"
+languageCode = "pt-br"
+baseURL = "http://localhost:1313/"
+theme = "ananke"
+
+# Informações adicionais
+author = "Vibewill"
+description = "Meu blog sobre tecnologia e programação"
+[menu]
+  [[menu.main]]
+    identifier = "home"
+    name = "Início"
+    url = "/"
+    weight = 1
+
+  [[menu.main]]
+    identifier = "posts"
+    name = "Posts"
+    url = "/posts/"
+    weight = 2
+    [params]
+customCSS = ["css/custom.css"]
+baseURL = "https://vibewill2.github.io/meu-blog/"
