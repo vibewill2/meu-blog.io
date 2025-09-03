@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vibewill | Artigos e Reflexões</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="logo">
+                    <h1><i class="fas fa-feather"></i> vibewill</h1>
+                </div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#home" class="nav-link active">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#about" class="nav-link">Sobre</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#categories" class="nav-link">Categorias</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#contact" class="nav-link">Contato</a>
+                    </li>
+                </ul>
+                <div class="hamburger">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero" id="home">
+            <div class="hero-content">
+                <h1 class="hero-title">Bem-vindo ao vibewill</h1>
+                <p class="hero-subtitle">Compartilhando ideias, conhecimento e experiências através de artigos inspiradores</p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary" id="explore-btn">
+                        <span>Explorar Posts</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                    <button class="btn btn-secondary" id="about-btn">
+                        <span>Sobre Mim</span>
+                        <i class="fas fa-user"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="floating-card card-1">
+                    <i class="fas fa-code"></i>
+                </div>
+                <div class="floating-card card-2">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <div class="floating-card card-3">
+                    <i class="fas fa-rocket"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Posts Section -->
+        <section class="featured-posts">
+            <div class="container">
+                <h2 class="section-title">Posts em Destaque</h2>
+                <div class="posts-grid" id="featured-posts">
+                    <!-- Posts serão inseridos aqui via JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Recent Posts Section -->
+        <section class="recent-posts" id="posts">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Últimos Posts</h2>
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" data-category="all">Todos</button>
+                        <button class="filter-btn" data-category="tecnologia">Tecnologia</button>
+                        <button class="filter-btn" data-category="lifestyle">Lifestyle</button>
+                        <button class="filter-btn" data-category="tutorial">Tutoriais</button>
+                    </div>
+                </div>
+                <div class="posts-container" id="posts-container">
+                    <!-- Posts serão inseridos aqui via JavaScript -->
+                </div>
+                <div class="load-more-container">
+                    <button class="btn btn-outline" id="load-more-btn">
+                        <span>Carregar Mais</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Newsletter Section -->
+        <section class="newsletter">
+            <div class="container">
+                <div class="newsletter-content">
+                    <h2>Fique por dentro das novidades</h2>
+                    <p>Receba os melhores artigos diretamente no seu email</p>
+                    <form class="newsletter-form" id="newsletter-form">
+                        <input type="email" placeholder="Seu melhor email" required>
+                        <button type="submit" class="btn btn-primary">
+                            <span>Inscrever-se</span>
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3><i class="fas fa-feather"></i> vibewill</h3>
+                    <p>Compartilhando conhecimento e inspiração através de artigos únicos e reflexões profundas.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link" aria-label="Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="LinkedIn">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="GitHub">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Navegação</h4>
+                    <ul class="footer-links">
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#about">Sobre</a></li>
+                        <li><a href="#posts">Posts</a></li>
+                        <li><a href="#contact">Contato</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Categorias</h4>
+                    <ul class="footer-links">
+                        <li><a href="#tecnologia">Tecnologia</a></li>
+                        <li><a href="#lifestyle">Lifestyle</a></li>
+                        <li><a href="#tutorial">Tutoriais</a></li>
+                        <li><a href="#opiniao">Opinião</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contato</h4>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-envelope"></i> contato@vibewill.com</li>
+                        <li><i class="fas fa-phone"></i> (11) 99999-9999</li>
+                        <li><i class="fas fa-map-marker-alt"></i> São Paulo, SP</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 vibewill. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
