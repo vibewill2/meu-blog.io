@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Admin - VibeWill Blog</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+            background: var(--background-color);
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--surface-color);
+            border-right: 1px solid var(--border-color);
+            padding: 2rem 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: var(--transition);
+            z-index: 1000;
+        }
+
+        .sidebar.collapsed {
+            width: 80px;
+        }
+
+        .sidebar-header {
+            padding: 0 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .sidebar-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            white-space: nowrap;
+            transition: var(--transition);
+        }
+
+        .sidebar.collapsed .sidebar-logo {
+            opacity: 0;
+        }
+
+        .sidebar-toggle {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: var(--transition);
+            padding: 0.5rem;
+            border-radius: 8px;
+        }
+
+        .sidebar-toggle:hover {
+            background: var(--border-color);
+            color: var(--primary-color);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+        }
+
+        .menu-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.875rem 2rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: var(--transition);
+            position: relative;
+            font-weight: 500;
+        }
+
+        .menu-link:hover,
+        .menu-link.active {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary-color);
+        }
+
+        .menu-link.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--primary-color);
+        }
+
+        .menu-icon {
+            width: 20px;
+            text-align: center;
+        }
+
+        .menu-text {
+            transition: var(--transition);
+        }
+
+        .sidebar.collapsed .menu-text {
+            opacity: 0;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            transition: var(--transition);
+            background: var(--background-color);
+        }
+
+        .sidebar.collapsed + .main-content {
+            margin-left: 80px;
+        }
+
+        .admin-header {
+            background: var(--surface-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.5rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .admin-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .content-area {
+            padding: 2rem;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--surface-color);
+            padding: 1.5rem;
+            border-radius: var(--border-radius-lg);
+            border-left: 4px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+
+        .stat-info h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .stat-info p {
+            color: var(--text-secondary);
+            margin: 0.25rem 0 0 0;
+            font-size: 0.9rem;
+        }
+
+        .posts-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .search-box {
+            position: relative;
+            min-width: 300px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 3rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--background-color);
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .posts-table {
+            background: var(--surface-color);
+            border-radius: var(--border-radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .table-header {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+        }
+
+        .table-content {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .post-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .post-item:hover {
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .post-item:last-child {
+            border-bottom: none;
+        }
+
+        .post-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .post-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .post-meta {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .post-category {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            padding: 0.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+            color: white;
+            font-size: 0.875rem;
+        }
+
+        .btn-edit {
+            background: #3b82f6;
+        }
+
+        .btn-edit:hover {
+            background: #2563eb;
+        }
+
+        .btn-delete {
+            background: #ef4444;
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+        }
+
+        .post-editor {
+            background: var(--surface-color);
+            padding: 2rem;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--background-color);
+            color: var(--text-primary);
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        .content-editor {
+            min-height: 300px;
+            font-family: monospace;
+            resize: vertical;
+        }
+
+        .editor-toolbar {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-btn {
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--background-color);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .toolbar-btn:hover {
+            background: var(--surface-color);
+            color: var(--primary-color);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .admin-header {
+                padding: 1rem;
+            }
+
+            .content-area {
+                padding: 1rem;
+            }
+
+            .posts-toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-box {
+                min-width: auto;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">VibeWill Admin</div>
+                <button class="sidebar-toggle" id="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <nav>
+                <ul class="sidebar-menu">
+                    <li class="menu-item">
+                        <a href="#dashboard" class="menu-link active" data-section="dashboard">
+                            <i class="fas fa-tachometer-alt menu-icon"></i>
+                            <span class="menu-text">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="#posts" class="menu-link" data-section="posts">
+                            <i class="fas fa-newspaper menu-icon"></i>
+                            <span class="menu-text">Posts</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="#new-post" class="menu-link" data-section="new-post">
+                            <i class="fas fa-plus-circle menu-icon"></i>
+                            <span class="menu-text">Novo Post</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="#settings" class="menu-link" data-section="settings">
+                            <i class="fas fa-cog menu-icon"></i>
+                            <span class="menu-text">Configurações</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="admin-header">
+                <h1 class="page-title" id="page-title">Dashboard</h1>
+                <div class="admin-actions">
+                    <button class="theme-toggle" id="theme-toggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <div class="user-info">
+                        <div class="user-avatar">VW</div>
+                        <span>vibewill</span>
+                    </div>
+                    <button class="btn btn-outline" id="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Sair
+                    </button>
+                </div>
+            </header>
+
+            <div class="content-area">
+                <!-- Dashboard Section -->
+                <section id="dashboard" class="section active">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-newspaper"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="total-posts">6</h3>
+                                <p>Total de Posts</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>1,234</h3>
+                                <p>Visualizações</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-tags"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>3</h3>
+                                <p>Categorias</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-calendar"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Este mês</h3>
+                                <p>Último post</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="posts-table">
+                        <div class="table-header">
+                            <h3>Posts Recentes</h3>
+                        </div>
+                        <div class="table-content" id="recent-posts">
+                            <!-- Posts serão carregados aqui -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Posts Management Section -->
+                <section id="posts" class="section">
+                    <div class="posts-toolbar">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Buscar posts..." id="posts-search">
+                        </div>
+                        <button class="btn btn-primary" id="add-post-btn">
+                            <i class="fas fa-plus"></i>
+                            Novo Post
+                        </button>
+                    </div>
+
+                    <div class="posts-table">
+                        <div class="table-header">
+                            <h3>Todos os Posts</h3>
+                        </div>
+                        <div class="table-content" id="all-posts">
+                            <!-- Posts serão carregados aqui -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- New/Edit Post Section -->
+                <section id="new-post" class="section">
+                    <div class="post-editor">
+                        <form id="post-form">
+                            <div class="form-grid">
+                                <div class="main-fields">
+                                    <div class="form-group">
+                                        <label for="post-title">Título do Post</label>
+                                        <input type="text" id="post-title" name="title" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="post-excerpt">Resumo</label>
+                                        <textarea id="post-excerpt" name="excerpt" rows="3" placeholder="Uma breve descrição do post..."></textarea>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="post-content">Conteúdo</label>
+                                        <div class="editor-toolbar">
+                                            <button type="button" class="toolbar-btn" title="Negrito" data-format="bold">
+                                                <i class="fas fa-bold"></i>
+                                            </button>
+                                            <button type="button" class="toolbar-btn" title="Itálico" data-format="italic">
+                                                <i class="fas fa-italic"></i>
+                                            </button>
+                                            <button type="button" class="toolbar-btn" title="Título" data-format="heading">
+                                                <i class="fas fa-heading"></i>
+                                            </button>
+                                            <button type="button" class="toolbar-btn" title="Lista" data-format="list">
+                                                <i class="fas fa-list"></i>
+                                            </button>
+                                            <button type="button" class="toolbar-btn" title="Link" data-format="link">
+                                                <i class="fas fa-link"></i>
+                                            </button>
+                                            <button type="button" class="toolbar-btn" title="Código" data-format="code">
+                                                <i class="fas fa-code"></i>
+                                            </button>
+                                        </div>
+                                        <textarea id="post-content" name="content" class="content-editor" placeholder="Digite o conteúdo do post em HTML..."></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="sidebar-fields">
+                                    <div class="form-group">
+                                        <label for="post-category">Categoria</label>
+                                        <select id="post-category" name="category" required>
+                                            <option value="">Selecione uma categoria</option>
+                                            <option value="tecnologia">Tecnologia</option>
+                                            <option value="design">Design</option>
+                                            <option value="lifestyle">Lifestyle</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="post-tags">Tags</label>
+                                        <input type="text" id="post-tags" name="tags" placeholder="tecnologia, programação, javascript">
+                                        <small>Separe as tags com vírgulas</small>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="post-image">Ícone</label>
+                                        <select id="post-image" name="image">
+                                            <option value="fas fa-rocket">🚀 Rocket</option>
+                                            <option value="fas fa-palette">🎨 Palette</option>
+                                            <option value="fas fa-coffee">☕ Coffee</option>
+                                            <option value="fas fa-code">💻 Code</option>
+                                            <option value="fas fa-lightbulb">💡 Lightbulb</option>
+                                            <option value="fas fa-heart">❤️ Heart</option>
+                                            <option value="fas fa-star">⭐ Star</option>
+                                            <option value="fas fa-sun">☀️ Sun</option>
+                                            <option value="fas fa-moon">🌙 Moon</option>
+                                            <option value="fas fa-leaf">🍃 Leaf</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>
+                                            <input type="checkbox" id="post-featured" name="featured">
+                                            Post em destaque
+                                        </label>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="post-status">Status</label>
+                                        <select id="post-status" name="status">
+                                            <option value="published">Publicado</option>
+                                            <option value="draft">Rascunho</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" id="cancel-post">
+                                    <i class="fas fa-times"></i>
+                                    Cancelar
+                                </button>
+                                <button type="button" class="btn btn-outline" id="save-draft">
+                                    <i class="fas fa-save"></i>
+                                    Salvar Rascunho
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-check"></i>
+                                    Publicar Post
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- Settings Section -->
+                <section id="settings" class="section">
+                    <div class="post-editor">
+                        <h3>Configurações do Blog</h3>
+                        <p>Funcionalidade em desenvolvimento...</p>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="admin-panel.js"></script>
+</body>
+</html>

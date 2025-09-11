@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - VibeWill Blog</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .login-container {
+            background: var(--surface-color);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-large);
+            overflow: hidden;
+            max-width: 400px;
+            width: 100%;
+            animation: slideInUp 0.8s ease-out;
+        }
+
+        .login-header {
+            background: var(--gradient-primary);
+            color: white;
+            text-align: center;
+            padding: 2.5rem 2rem;
+        }
+
+        .login-header .logo {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .login-header p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .login-form {
+            padding: 2.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            transition: var(--transition);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--background-color);
+            color: var(--text-primary);
+            transition: var(--transition);
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-group input:focus + .input-wrapper i {
+            color: var(--primary-color);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+            padding: 0.25rem;
+        }
+
+        .password-toggle:hover {
+            color: var(--primary-color);
+        }
+
+        .remember-forgot {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .forgot-password {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        .login-btn {
+            width: 100%;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-large);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .login-btn .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        .login-btn.loading .spinner {
+            display: inline-block;
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+            border-left: 4px solid #dc2626;
+        }
+
+        .error-message.show {
+            display: flex;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .back-link a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-link a:hover {
+            color: var(--primary-color);
+        }
+
+        .security-note {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary-color);
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            font-size: 0.85rem;
+            text-align: center;
+            border-left: 4px solid var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Animations */
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Dark theme support */
+        [data-theme="dark"] body {
+            background: linear-gradient(135deg, #1e293b, #334155);
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .login-container {
+                margin: 1rem;
+            }
+            
+            .login-header {
+                padding: 2rem 1.5rem;
+            }
+            
+            .login-form {
+                padding: 2rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <div class="logo">
+                <i class="fas fa-shield-alt"></i>
+                Admin Panel
+            </div>
+            <p>Faça login para acessar o painel administrativo</p>
+        </div>
+
+        <form class="login-form" id="login-form">
+            <div class="security-note">
+                <i class="fas fa-info-circle"></i>
+                Área restrita - Apenas administradores autorizados
+            </div>
+
+            <div class="error-message" id="error-message">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span id="error-text">Usuário ou senha incorretos!</span>
+            </div>
+
+            <div class="form-group">
+                <label for="username">Usuário</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-user"></i>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username" 
+                        placeholder="Digite seu usuário"
+                        autocomplete="username"
+                        required
+                    >
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Senha</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock"></i>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        placeholder="Digite sua senha"
+                        autocomplete="current-password"
+                        required
+                    >
+                    <button type="button" class="password-toggle" id="password-toggle">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="remember-forgot">
+                <label class="remember-me">
+                    <input type="checkbox" id="remember-me" name="remember">
+                    <span>Lembrar de mim</span>
+                </label>
+                <a href="#" class="forgot-password" id="forgot-password">
+                    Esqueceu a senha?
+                </a>
+            </div>
+
+            <button type="submit" class="login-btn" id="login-btn">
+                <div class="spinner"></div>
+                <span>Entrar no Painel</span>
+            </button>
+
+            <div class="back-link">
+                <a href="../index.html">
+                    <i class="fas fa-arrow-left"></i>
+                    Voltar ao Blog
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        class AdminLogin {
+            constructor() {
+                this.loginForm = document.getElementById('login-form');
+                this.usernameField = document.getElementById('username');
+                this.passwordField = document.getElementById('password');
+                this.passwordToggle = document.getElementById('password-toggle');
+                this.loginBtn = document.getElementById('login-btn');
+                this.errorMessage = document.getElementById('error-message');
+                this.errorText = document.getElementById('error-text');
+                
+                this.init();
+            }
+
+            init() {
+                this.bindEvents();
+                this.setupTheme();
+                this.checkExistingSession();
+            }
+
+            bindEvents() {
+                this.loginForm.addEventListener('submit', this.handleLogin.bind(this));
+                this.passwordToggle.addEventListener('click', this.togglePassword.bind(this));
+                
+                // Enter key on username field focuses password
+                this.usernameField.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        this.passwordField.focus();
+                    }
+                });
+
+                // Hide error message when user starts typing
+                [this.usernameField, this.passwordField].forEach(field => {
+                    field.addEventListener('input', () => {
+                        this.hideError();
+                    });
+                });
+
+                // Forgot password link
+                document.getElementById('forgot-password').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.showForgotPasswordInfo();
+                });
+            }
+
+            setupTheme() {
+                const savedTheme = localStorage.getItem('theme') || 'light';
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            }
+
+            checkExistingSession() {
+                const adminSession = localStorage.getItem('admin_session');
+                const sessionExpiry = localStorage.getItem('admin_session_expiry');
+                
+                if (adminSession && sessionExpiry && new Date().getTime() < parseInt(sessionExpiry)) {
+                    // Valid session exists, redirect to admin panel
+                    window.location.href = 'panel.html';
+                }
+            }
+
+            async handleLogin(e) {
+                e.preventDefault();
+                
+                const username = this.usernameField.value.trim();
+                const password = this.passwordField.value;
+                const rememberMe = document.getElementById('remember-me').checked;
+
+                // Validate fields
+                if (!username || !password) {
+                    this.showError('Por favor, preencha todos os campos.');
+                    return;
+                }
+
+                // Show loading state
+                this.setLoading(true);
+
+                // Simulate authentication delay
+                setTimeout(() => {
+                    this.authenticate(username, password, rememberMe);
+                }, 1000);
+            }
+
+            authenticate(username, password, rememberMe) {
+                // Check credentials
+                if (username === 'vibewill' && password === '00220783') {
+                    // Success
+                    this.onLoginSuccess(rememberMe);
+                } else {
+                    // Failure
+                    this.onLoginFailure();
+                }
+            }
+
+            onLoginSuccess(rememberMe) {
+                // Create session
+                const sessionToken = this.generateSessionToken();
+                const expiryTime = rememberMe ? 
+                    new Date().getTime() + (30 * 24 * 60 * 60 * 1000) : // 30 days
+                    new Date().getTime() + (24 * 60 * 60 * 1000); // 24 hours
+
+                localStorage.setItem('admin_session', sessionToken);
+                localStorage.setItem('admin_session_expiry', expiryTime.toString());
+                localStorage.setItem('admin_username', 'vibewill');
+
+                // Show success animation
+                this.showSuccess();
+
+                // Redirect after success animation
+                setTimeout(() => {
+                    window.location.href = 'panel.html';
+                }, 1500);
+            }
+
+            onLoginFailure() {
+                this.setLoading(false);
+                this.showError('Usuário ou senha incorretos!');
+                
+                // Clear password field
+                this.passwordField.value = '';
+                this.passwordField.focus();
+                
+                // Add shake animation to form
+                this.loginForm.style.animation = 'shake 0.5s ease-in-out';
+                setTimeout(() => {
+                    this.loginForm.style.animation = '';
+                }, 500);
+            }
+
+            generateSessionToken() {
+                return btoa(Math.random().toString(36).substr(2) + Date.now().toString(36));
+            }
+
+            togglePassword() {
+                const type = this.passwordField.type === 'password' ? 'text' : 'password';
+                this.passwordField.type = type;
+                
+                const icon = this.passwordToggle.querySelector('i');
+                icon.className = type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
+            }
+
+            setLoading(loading) {
+                this.loginBtn.classList.toggle('loading', loading);
+                this.loginBtn.disabled = loading;
+                
+                const span = this.loginBtn.querySelector('span');
+                span.textContent = loading ? 'Entrando...' : 'Entrar no Painel';
+            }
+
+            showError(message) {
+                this.errorText.textContent = message;
+                this.errorMessage.classList.add('show');
+                
+                // Auto hide after 5 seconds
+                setTimeout(() => {
+                    this.hideError();
+                }, 5000);
+            }
+
+            hideError() {
+                this.errorMessage.classList.remove('show');
+            }
+
+            showSuccess() {
+                // Change button to success state
+                this.loginBtn.style.background = '#10b981';
+                this.loginBtn.querySelector('span').textContent = 'Login realizado!';
+                this.loginBtn.innerHTML = `
+                    <i class="fas fa-check"></i>
+                    <span>Redirecionando...</span>
+                `;
+            }
+
+            showForgotPasswordInfo() {
+                alert('Entre em contato com o administrador do sistema para recuperar sua senha.\n\nE-mail: contato@vibewill.com');
+            }
+        }
+
+        // Initialize admin login
+        document.addEventListener('DOMContentLoaded', () => {
+            new AdminLogin();
+        });
+
+        // Add some security measures
+        document.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            // Disable F12 and other dev tools shortcuts
+            if (e.key === 'F12' || 
+                (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+                (e.ctrlKey && e.shiftKey && e.key === 'J') ||
+                (e.ctrlKey && e.key === 'U')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+    </script>
+</body>
+</html>
