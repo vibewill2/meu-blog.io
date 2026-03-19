@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const authBtn = document.getElementById('auth-btn');
     const postBtn = document.getElementById('post-btn');
+    const addVideoBtn = document.getElementById('add-video-btn');
     const postsContainer = document.getElementById('posts');
 
     let editingPostId = null;
@@ -102,9 +103,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (loggedIn) {
             authBtn.textContent = 'Logout';
             postBtn.style.display = 'inline-block';
+            addVideoBtn.style.display = 'inline-block';
         } else {
             authBtn.textContent = 'Login';
             postBtn.style.display = 'none';
+            addVideoBtn.style.display = 'none';
         }
         renderAllPosts();
 
@@ -244,7 +247,13 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Adicionar vídeo
-    document.getElementById('add-video-btn').addEventListener('click', () => {
+    addVideoBtn.addEventListener('click', () => {
+        const loggedIn = localStorage.getItem('loggedIn') === 'true';
+        if (!loggedIn) {
+            alert('Faça login para adicionar vídeos.');
+            return;
+        }
+
         const title = prompt('Título do vídeo:');
         const url = prompt('URL do vídeo:');
         if (title && url) {
