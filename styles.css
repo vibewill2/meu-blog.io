@@ -1,0 +1,132 @@
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #333;
+    min-height: 100vh;
+}
+
+header {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+h1 {
+    margin: 0 0 10px 0;
+    color: #333;
+}
+
+header div {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+#auth-btn, #post-btn {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+#auth-btn:hover, #post-btn:hover {
+    background: #45a049;
+}
+
+main {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+#posts {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#video-links {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 250px;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+#video-links h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+#video-links a {
+    display: block;
+    margin-bottom: 10px;
+    color: #667eea;
+    text-decoration: none;
+}
+
+#video-links a:hover {
+    text-decoration: underline;
+}
+
+.post {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
+}
+
+.post:hover {
+    transform: translateY(-5px);
+}
+
+.post h2 {
+    margin-top: 0;
+    color: #333;
+}
+
+.post p {
+    line-height: 1.6;
+}
+
+.delete-btn {
+    margin-top: 15px;
+    background: #ff4747;
+    border: none;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.delete-btn:hover {
+    background: #d83b3b;
+}
+
+.edit-btn {
+    margin-top: 15px;
+    margin-right: 10px;
+    background: #4CAF50;
+    border: none;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.edit-btn:hover {
+    background: #45a049;
+}
