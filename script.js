@@ -1,55 +1,18 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     const authBtn = document.getElementById('auth-btn');
     const postBtn = document.getElementById('post-btn');
     const addVideoBtn = document.getElementById('add-video-btn');
     const postsContainer = document.getElementById('posts');
 
     let editingPostId = null;
+    let loggedIn = false;
 
-    const STORAGE_KEY = 'blogPosts';
-    const VIDEOS_KEY = 'blogVideos';
-
-    function saveVideos(videos) {
-        localStorage.setItem(VIDEOS_KEY, JSON.stringify(videos));
+    async function loadVideos() {
+        return await Database.getVideos();
     }
 
-    function loadVideos() {
-        const raw = localStorage.getItem(VIDEOS_KEY);
-        if (!raw) return [];
-        try {
-            return JSON.parse(raw);
-        } catch {
-            return [];
-        }
-    }
-
-    function renderVideos() {
-        const videosList = document.getElementById('videos-list');
-        videosList.innerHTML = '';
-        const videos = loadVideos();
-        videos.forEach(video => {
-            const link = document.createElement('a');
-            link.href = video.url;
-            link.target = '_blank';
-            link.textContent = video.title;
-            link.style.display = 'block';
-            link.style.marginBottom = '10px';
-            videosList.appendChild(link);
-        });
-    }
-
-    function savePosts(posts) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
-    }
-
-    function loadPosts() {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return [];
-        try {
-            return JSON.parse(raw);
-        } catch {
-            return [];
-        }
+    async function loadPosts() {
+        return await Database.getPosts();
     }
 
     function renderPost(postData) {
@@ -61,7 +24,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         post.innerHTML = `<h2>${postData.title}</h2>${imageHtml}<p>${postData.content}</p>`;
 
-        const loggedIn = localStorage.getItem('loggedIn') === 'true';
         if (loggedIn) {
             const editBtn = document.createElement('button');
             editBtn.textContent = 'Editar';
@@ -77,10 +39,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const deleteBtn = document.createElement('button');
             deleteBtn.textContent = 'Excluir';
             deleteBtn.className = 'delete-btn';
-            deleteBtn.addEventListener('click', () => {
-                const posts = loadPosts().filter(p => p.id !== postData.id);
-                savePosts(posts);
-                post.remove();
+            deleteBtn.addEventListener('click', async () => {
+                await Database.deletePost(postData.id);
+                await renderAllPosts();
             });
 
             post.appendChild(editBtn);
@@ -90,16 +51,28 @@ document.addEventListener('DOMContentLoaded', function() {
         postsContainer.insertBefore(post, postsContainer.firstChild);
     }
 
-    function renderAllPosts() {
-        const posts = loadPosts();
-        postsContainer.innerHTML = '';
-        // mostrar os mais recentes primeiro
-        posts.slice().reverse().forEach(renderPost);
+    async function renderVideos() {
+        const videosList = document.getElementById('videos-list');
+        videosList.innerHTML = '';
+        const videos = await loadVideos();
+        videos.forEach(video => {
+            const link = document.createElement('a');
+            link.href = video.url;
+            link.target = '_blank';
+            link.textContent = video.title;
+            link.style.display = 'block';
+            link.style.marginBottom = '10px';
+            videosList.appendChild(link);
+        });
     }
 
-    // Verificar se está logado
-    function checkLogin() {
-        const loggedIn = localStorage.getItem('loggedIn') === 'true';
+    async function renderAllPosts() {
+        const posts = await loadPosts();
+        postsContainer.innerHTML = '';
+        posts.forEach(renderPost);
+    }
+
+    async function checkLogin() {
         if (loggedIn) {
             authBtn.textContent = 'Logout';
             postBtn.style.display = 'inline-block';
@@ -109,32 +82,12 @@ document.addEventListener('DOMContentLoaded', function() {
             postBtn.style.display = 'none';
             addVideoBtn.style.display = 'none';
         }
-        renderAllPosts();
-
-        // Remover posts de exemplo antigos
-        const posts = loadPosts();
-        const filteredPosts = posts.filter(p => !['1', '2', '3'].includes(p.id));
-        if (filteredPosts.length !== posts.length) {
-            savePosts(filteredPosts);
-            renderAllPosts();
-        }
-
-        // Renderizar vídeos
-        const videos = loadVideos();
-        if (videos.length === 0) {
-            const defaultVideos = [
-                { title: 'Vídeo sobre JavaScript', url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' },
-                { title: 'Tutorial de HTML e CSS', url: 'https://www.youtube.com/watch?v=UB1O30fR-EE' },
-                { title: 'Introdução ao Desenvolvimento Web', url: 'https://www.youtube.com/watch?v=3JluqTojuME' }
-            ];
-            saveVideos(defaultVideos);
-        }
-        renderVideos();
+        await renderAllPosts();
+        await renderVideos();
     }
 
     checkLogin();
 
-    // Modal de login
     const loginModal = document.createElement('div');
     loginModal.style.cssText = `
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -156,7 +109,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (authBtn.textContent === 'Login') {
             loginModal.style.display = 'flex';
         } else {
-            localStorage.removeItem('loggedIn');
+            loggedIn = false;
             checkLogin();
         }
     });
@@ -169,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
         if (username === 'vibewill' && password === 'Guns@123') {
-            localStorage.setItem('loggedIn', 'true');
+            loggedIn = true;
             loginModal.style.display = 'none';
             checkLogin();
         } else {
@@ -177,7 +130,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Criar modal de postagem
     const modal = document.createElement('div');
     modal.style.cssText = `
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -203,66 +155,50 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('cancel-post').addEventListener('click', () => {
         modal.style.display = 'none';
         editingPostId = null;
-        // Limpar campos ao cancelar
         document.getElementById('post-title').value = '';
         document.getElementById('post-content').value = '';
         document.getElementById('post-image').value = '';
     });
 
-    document.getElementById('submit-post').addEventListener('click', () => {
+    document.getElementById('submit-post').addEventListener('click', async () => {
         const title = document.getElementById('post-title').value;
         const content = document.getElementById('post-content').value;
         const image = document.getElementById('post-image').value;
         if (title && content) {
-            const posts = loadPosts();
             if (editingPostId) {
-                // Editar post existente
-                const postIndex = posts.findIndex(p => p.id === editingPostId);
-                if (postIndex !== -1) {
-                    posts[postIndex] = { ...posts[postIndex], title, content, image: image || null };
-                    savePosts(posts);
-                    renderAllPosts();
-                }
+                const updatedPost = {
+                    id: editingPostId,
+                    title,
+                    content,
+                    image: image || null,
+                    updatedAt: new Date().toISOString(),
+                };
+                await Database.updatePost(updatedPost);
                 editingPostId = null;
             } else {
-                // Criar novo post
                 const newPost = {
-                    id: Date.now().toString(),
                     title,
                     content,
                     image: image || null,
                     createdAt: new Date().toISOString(),
                 };
-                posts.push(newPost);
-                savePosts(posts);
-                renderPost(newPost);
+                await Database.addPost(newPost);
             }
 
-            // Limpar campos
             document.getElementById('post-title').value = '';
             document.getElementById('post-content').value = '';
             document.getElementById('post-image').value = '';
             modal.style.display = 'none';
+            await renderAllPosts();
         }
     });
 
-    // Adicionar vídeo
-    addVideoBtn.addEventListener('click', () => {
-        const loggedIn = localStorage.getItem('loggedIn') === 'true';
-        if (!loggedIn) {
-            alert('Faça login para adicionar vídeos.');
-            return;
-        }
-
+    addVideoBtn.addEventListener('click', async () => {
         const title = prompt('Título do vídeo:');
         const url = prompt('URL do vídeo:');
         if (title && url) {
-            const videos = loadVideos();
-            videos.push({ title, url });
-            saveVideos(videos);
-            renderVideos();
+            await Database.addVideo({ title, url });
+            await renderVideos();
         }
     });
-
-    renderAllPosts();
 });
