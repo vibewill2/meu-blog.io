@@ -160,11 +160,21 @@ document.addEventListener('DOMContentLoaded', async function() {
         document.getElementById('post-image').value = '';
     });
 
+    function showError(message) {
+        alert(message);
+        console.error(message);
+    }
+
     document.getElementById('submit-post').addEventListener('click', async () => {
         const title = document.getElementById('post-title').value;
         const content = document.getElementById('post-content').value;
         const image = document.getElementById('post-image').value;
-        if (title && content) {
+        if (!title || !content) {
+            showError('Título e conteúdo são obrigatórios para postar.');
+            return;
+        }
+
+        try {
             if (editingPostId) {
                 const updatedPost = {
                     id: editingPostId,
@@ -190,6 +200,9 @@ document.addEventListener('DOMContentLoaded', async function() {
             document.getElementById('post-image').value = '';
             modal.style.display = 'none';
             await renderAllPosts();
+        } catch (error) {
+            const message = error?.message || String(error) || 'Erro desconhecido ao publicar post.';
+            showError('Não foi possível postar: ' + message);
         }
     });
 
