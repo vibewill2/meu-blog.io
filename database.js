@@ -1,77 +1,83 @@
 // database.js
-// Integração com Firestore para armazenar posts e vídeos remotamente.
-// Substitua os valores de firebaseConfig pelo seu projeto Firebase antes de publicar.
+// Persistência local usando localStorage.
+// Os posts e vídeos são salvos diretamente no navegador e permanecem após atualizar a página.
 
-const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
-};
+const POSTS_KEY = 'meu_blog_posts';
+const VIDEOS_KEY = 'meu_blog_videos';
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-const postsCollection = db.collection('posts');
-const videosCollection = db.collection('videos');
+function loadStorage(key) {
+    try {
+        return JSON.parse(localStorage.getItem(key)) || [];
+    } catch (error) {
+        console.error('Erro ao ler storage:', error);
+        return [];
+    }
+}
+
+function saveStorage(key, data) {
+    localStorage.setItem(key, JSON.stringify(data));
+}
+
+function generateId() {
+    return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+}
 
 const Database = {
     getPosts: async function() {
-        try {
-            const snapshot = await postsCollection.orderBy('createdAt', 'desc').get();
-            return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        } catch (error) {
-            console.error('Erro ao carregar posts do Firestore:', error);
-            return [];
-        }
+        const posts = loadStorage(POSTS_KEY);
+        return posts.slice().sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
     },
 
     getVideos: async function() {
-        try {
-            const snapshot = await videosCollection.get();
-            return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        } catch (error) {
-            console.error('Erro ao carregar vídeos do Firestore:', error);
-            return [];
-        }
+        return loadStorage(VIDEOS_KEY);
     },
 
     addPost: async function(post) {
-        try {
-            const docRef = await postsCollection.add(post);
-            return { ...post, id: docRef.id };
-        } catch (error) {
-            console.error('Erro ao adicionar post ao Firestore:', error);
-            throw error;
-        }
+        const posts = loadStorage(POSTS_KEY);
+        const newPost = {
+            id: generateId(),
+            title: post.title,
+            content: post.content,
+            image: post.image || null,
+            createdAt: post.createdAt || new Date().toISOString(),
+            updatedAt: post.updatedAt || null
+        };
+        posts.push(newPost);
+        saveStorage(POSTS_KEY, posts);
+        return newPost;
     },
 
     updatePost: async function(post) {
-        try {
-            await postsCollection.doc(post.id).set(post);
-        } catch (error) {
-            console.error('Erro ao atualizar post no Firestore:', error);
-            throw error;
+        const posts = loadStorage(POSTS_KEY);
+        const index = posts.findIndex(item => item.id === post.id);
+        if (index === -1) {
+            throw new Error('Post não encontrado.');
         }
+        posts[index] = {
+            ...posts[index],
+            title: post.title,
+            content: post.content,
+            image: post.image || null,
+            updatedAt: post.updatedAt || new Date().toISOString()
+        };
+        saveStorage(POSTS_KEY, posts);
     },
 
     deletePost: async function(postId) {
-        try {
-            await postsCollection.doc(postId).delete();
-        } catch (error) {
-            console.error('Erro ao excluir post no Firestore:', error);
-            throw error;
-        }
+        const posts = loadStorage(POSTS_KEY).filter(item => item.id !== postId);
+        saveStorage(POSTS_KEY, posts);
     },
 
     addVideo: async function(video) {
-        try {
-            const docRef = await videosCollection.add(video);
-            return { ...video, id: docRef.id };
-        } catch (error) {
-            console.error('Erro ao adicionar vídeo ao Firestore:', error);
-            throw error;
-        }
+        const videos = loadStorage(VIDEOS_KEY);
+        const newVideo = {
+            id: generateId(),
+            title: video.title,
+            url: video.url,
+            createdAt: new Date().toISOString()
+        };
+        videos.push(newVideo);
+        saveStorage(VIDEOS_KEY, videos);
+        return newVideo;
     }
 };
